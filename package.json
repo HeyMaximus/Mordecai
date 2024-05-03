@@ -1,0 +1,33 @@
+{
+  "name": "mordecai",
+  "version": "1.0.0",
+  "description": "Mastermind game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeyMaximus/Mordecai.git"
+  },
+  "author": "Maximus Chen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HeyMaximus/Mordecai/issues"
+  },
+  "homepage": "https://github.com/HeyMaximus/Mordecai#readme",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "express": "^4.19.2",
+    "nodemon": "^3.1.0",
+    "postgres": "^3.4.4",
+    "react": "^18.3.1",
+    "react-bootstrap": "^2.10.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.1",
+    "globals": "^15.1.0",
+    "webpack": "^5.91.0"
+  }
+}
