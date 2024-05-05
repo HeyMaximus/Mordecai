@@ -9,6 +9,7 @@ async function initializePool(database = 'postgres') {
     port: process.env.DB_PORT || '5432',
     max: 30,
   });
+
   return pool;
 }
 
@@ -58,6 +59,12 @@ async function initializeDb() {
   }
 }
 
-const db = initializeDb();
 
-module.exports = db;
+// const queryStr = `INSTER INTO games (mode, difficulty, answer, username)
+//   VALUES (solo, 5, 01234, Devin)
+//   RETURNING id;`
+
+// const gameID = db.query(queryStr);
+// console.log('this is gameID: ', gameID)
+
+module.exports = initializeDb()
