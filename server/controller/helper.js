@@ -17,9 +17,9 @@ function analyzeGuess(guess, answer) {
   }
 
   for (var j = 0; j < remainders.length; j++) {
-    if (freqMap[remainders[i]] > 0) {
+    if (freqMap[remainders[j]] > 0) {
       correctNum += 1;
-      freqMap[remainders[i]] -= 1;
+      freqMap[remainders[j]] -= 1;
     }
   }
   correctNum = correctNum + correctLoc;

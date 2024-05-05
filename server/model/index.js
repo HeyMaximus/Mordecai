@@ -9,7 +9,6 @@ function insertGame(mode, status, difficulty, answer, username) {
   const queryStr = `INSERT INTO games (mode, status, difficulty, answer, username)
   VALUES ($1, $2, $3, $4, $5)
   RETURNING id;`;
-
   return pool.query(queryStr, [mode, status, difficulty, answer, username]);
 }
 

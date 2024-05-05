@@ -5,7 +5,7 @@ const {
   resolveGame,
   createHighScores,
   checkOpenGame,
-  changeGameStatus
+  changeGameStatus,
 } = require("../model");
 const { analyzeGuess, createHint } = require("./helper");
 
@@ -25,14 +25,18 @@ function createGame(req, res) {
   };
   axios
     .get(genAnswerUrl, ansParams)
-    .then((answer) =>
-      insertGame(
+    .then((answer) => {
+      let answerStr = answer.data.split('\n')
+      answerStr.pop();
+      answerStr = answerStr.join('')
+      return insertGame(
         req.body.mode,
         status,
         req.body.difficulty,
-        answer.data,
+        answerStr,
         req.body.username
       )
+    }
     )
     .then((gameID) => res.status(201).json({ gameID: gameID.rows[0].id }))
     .catch((error) => {
@@ -68,7 +72,7 @@ function makeGuess(req, res) {
 }
 
 function getHint(req, res) {
-  const gameID = req.body.gameID || 6;
+  const gameID = req.body.gameID;
   getAnswer(gameID)
     .then((result) => {
       const answer = result.rows[0].answer;
@@ -82,31 +86,30 @@ function getHint(req, res) {
 }
 
 function getHighScores(req, res) {
-  const difficulty = req.body.difficulty || 6;
+  const difficulty = req.body.difficulty;
   createHighScores(difficulty).then((highScores) =>
     res.status(200).json(highScores.rows)
   );
 }
 
 function openGame(req, res) {
-  const gameID = req.body.gameID || 30;
-  const username = req.body.username || 'Ted';
-  checkOpenGame(gameID).then((result) => {
-      console.log(result.rows[0])
-    if (result.rows[0] === undefined) {
-      res.status(200).json({ gameStatus: 'Game not found.' });
-    } else if (result.rows[0].status === 'created') {
-      changeGameStatus(username, gameID);
-      res.status(201).json({ gameStatus: 'Do your best!' });
-    } else {
-      res.status(200).json({ gameStatus: 'Game already used.' });
-    }
-
-  })
-  .catch((error) => {
-    res.sendStatus(500);
-    console.log("openGame error: ", error);
-  });
+  const gameID = req.body.gameID;
+  const username = req.body.username;
+  checkOpenGame(gameID)
+    .then((result) => {
+      if (result.rows[0] === undefined) {
+        res.status(200).json({ gameStatus: "Game not found." });
+      } else if (result.rows[0].status === "created") {
+        changeGameStatus(username, gameID);
+        res.status(201).json({ gameStatus: "Do your best!" });
+      } else {
+        res.status(200).json({ gameStatus: "Game already used." });
+      }
+    })
+    .catch((error) => {
+      res.sendStatus(500);
+      console.log("openGame error: ", error);
+    });
 }
 
 module.exports = { createGame, makeGuess, getHint, getHighScores, openGame };

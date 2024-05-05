@@ -1,12 +1,12 @@
-const { Pool } = require('pg');
+const { Pool } = require("pg");
 
-async function initializePool(database = 'postgres') {
+async function initializePool(database = "postgres") {
   const pool = new Pool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || '',
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "postgres",
+    password: process.env.DB_PASSWORD || "",
     database: database,
-    port: process.env.DB_PORT || '5432',
+    port: process.env.DB_PORT || "5432",
     max: 30,
   });
 
@@ -16,20 +16,20 @@ async function initializePool(database = 'postgres') {
 async function createDatabase() {
   try {
     const pool = await initializePool();
-    await pool.query('CREATE DATABASE mordecai;');
+    await pool.query("CREATE DATABASE mordecai;");
     pool.end();
   } catch (error) {
-    if (error.code !== '42P04') {
-      console.error('Error creating database:', error);
+    if (error.code !== "42P04") {
+      console.error("Error creating database:", error);
     } else {
-      console.log('Database mordecai found.');
+      console.log("Database mordecai found.");
     }
   }
 }
 
 async function createTable() {
   try {
-    const pool = await initializePool('mordecai');
+    const pool = await initializePool("mordecai");
     const query = `
       CREATE TABLE IF NOT EXISTS games (
         id SERIAL PRIMARY KEY,
@@ -46,7 +46,7 @@ async function createTable() {
     await pool.query(query);
     return pool;
   } catch (error) {
-    console.error('Error creating table:', error);
+    console.error("Error creating table:", error);
   }
 }
 
@@ -55,16 +55,8 @@ async function initializeDb() {
     await createDatabase();
     return await createTable();
   } catch (error) {
-    console.error('Initialization failed:', error);
+    console.error("Initialization failed:", error);
   }
 }
 
-
-// const queryStr = `INSTER INTO games (mode, difficulty, answer, username)
-//   VALUES (solo, 5, 01234, Devin)
-//   RETURNING id;`
-
-// const gameID = db.query(queryStr);
-// console.log('this is gameID: ', gameID)
-
-module.exports = initializeDb()
+module.exports = initializeDb();
