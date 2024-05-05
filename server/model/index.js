@@ -20,5 +20,10 @@ function getAnswer(gameID) {
   return pool.query(queryStr, [gameID])
 }
 
+function resolveGame(gameID) {
 
-module.exports = { insertGame, getAnswer }
+}
+
+
+
+module.exports = { insertGame, getAnswer, resolveGame }
