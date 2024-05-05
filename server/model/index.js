@@ -19,7 +19,7 @@ function getAnswer(gameID) {
 
 function resolveGame(status, solved, attempts, username, gameID) {
   const queryStr = `UPDATE games SET status=$1, solved=$2, attempts=$3, username=$4 WHERE id=$5;`;
-  return pool.query(queryStr, [status, solved, attempts, gameID, username]);
+  return pool.query(queryStr, [status, solved, attempts, username, gameID]);
 }
 
 function createHighScores(difficulty) {

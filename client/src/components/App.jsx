@@ -8,7 +8,7 @@ function App() {
   const [difficulty, setDifficulty] = useState(4);
   const [mode, setMode] = useState("");
   const [gameID, setGameID] = useState(0);
-  const [attempt, setAttempt] = useState(0);
+  const [attempts, setAttempts] = useState(0);
   const [combo, setCombo] = useState('');
   const [guessHistory, setGuessHistory] = useState([]);
   const [results, setResults] = useState([])
@@ -19,7 +19,7 @@ function App() {
     setDifficulty(4);
     setMode('');
     setgameID(0);
-    setAttempt('');
+    setAttempts('');
     setGuess('');
     setGuessHistory([]);
     setHighScores([]);
@@ -34,10 +34,10 @@ function App() {
 
   const makeGuess = () => {
     let guess = combo.split('').map((x) => Number(x));
-    let tries = attempt+1;
-    setGuessHistory([...guessHistory, combo])
-    setAttempt(tries)
-    axios.post(`${url}/makeGuess`, {gameID, guess, username, attempt, difficulty})
+    let tries = attempts+1;
+    setGuessHistory([...guessHistory, combo]);
+    setAttempts(tries);
+    axios.post(`${url}/makeGuess`, {gameID, guess, username, attempts: tries, difficulty})
       .then((r) => {
         console.log(r.data)
         let guessResult = {
@@ -69,13 +69,17 @@ function App() {
       {mode === 'solo' || mode ==='pvp1' ? <h4>Mode OK!</h4> : <h4>Need valid mode input.</h4>}
       <button onClick={() => createGame()}>Start Game</button>
 
+      {gameID !== 0 ?
+      <div>
       <h3>Make a guess of {difficulty} numbers 0-7</h3>
       <input onChange={(e) => setCombo(e.target.value)} value={combo} placeholder="example 0123"></input>
-      {mode && username && combo.length === difficulty && attempt < 10 ? <button onClick={() => makeGuess()}>Make Guess</button> : null}
-      <p>attempts left: {10-attempt}</p>
+      {mode && username && combo.length === difficulty && attempts < 10 ? <button onClick={() => makeGuess()}>Make Guess</button> : null}
+      <p>attempts left: {10-attempts}</p>
       <h3>Guess History</h3>
       <GuessHistory results={results}/>
-
+      </div>
+      :null
+      }
     </div>
   );
 }

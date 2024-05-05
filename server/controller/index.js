@@ -46,11 +46,11 @@ function createGame(req, res) {
 }
 
 function makeGuess(req, res) {
-  const gameID = req.body.gameID || 5;
-  const guess = req.body.guess || [5, 4, 3, 2, 1];
+  const gameID = req.body.gameID;
+  const guess = req.body.guess;
   const username = req.body.username;
-  const attempts = req.body.attempts || 7;
-  const difficulty = req.body.difficulty || 5;
+  const attempts = req.body.attempts;
+  const difficulty = req.body.difficulty;
   let endGame = false;
 
   getAnswer(gameID)
