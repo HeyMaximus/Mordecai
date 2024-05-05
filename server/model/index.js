@@ -16,14 +16,21 @@ return pool.query(queryStr, [mode, difficulty, answer, username]);
 }
 
 function getAnswer(gameID) {
-  const queryStr = 'SELECT answer FROM games WHERE id = $1';
+  const queryStr = 'SELECT answer FROM games WHERE id=$1';
   return pool.query(queryStr, [gameID])
 }
 
-function resolveGame(gameID) {
-
+function resolveGame(status, solved, attempts, gameID) {
+  const queryStr = `UPDATE games SET status=$1, solved=$2, attempts=$3 WHERE id=$3;`;
+  return pool.query(queryStr, [status, solved, gameID])
 }
 
+function createHighScores(difficulty) {
+  const queryStr = `SELECT username, attempts FROM games
+  WHERE difficulty=$1 AND solved='t' AND status='completed'
+  ORDER BY attempts DESC
+  LIMIT 5;`
+  return pool.query(queryStr, [difficulty])
+}
 
-
-module.exports = { insertGame, getAnswer, resolveGame }
+module.exports = { insertGame, getAnswer, resolveGame, createHighScores }

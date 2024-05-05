@@ -14,4 +14,4 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 app.use('/api', router);
 
 app.listen(process.env.SERVER_PORT || 3000);
-console.log(`Node server listening on Port: ${process.env.SERVER_PORT}.`);
+console.log(`Server listening on PORT: ${process.env.SERVER_PORT}.`);

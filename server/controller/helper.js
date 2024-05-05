@@ -5,7 +5,7 @@ function analyzeGuess(guess, answer) {
   let freqMap = new Array(8);
 
   for (var i = 0; i < guess.length; i++) {
-    const answerNum = Number(answer[i])
+    const answerNum = Number(answer[i]);
     const guessNum = guess[i];
 
     if (guessNum === answerNum) {
