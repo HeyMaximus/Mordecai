@@ -13,17 +13,21 @@ function App() {
   const [guessHistory, setGuessHistory] = useState([]);
   const [results, setResults] = useState([])
   const [highScores, setHighScores] = useState([]);
+  const [hint, setHint] = useState({})
   const [endGame, setEndGame] = useState(false);
 
   const resetAll = () => {
     setUsername('');
     setDifficulty(4);
     setMode('');
-    setgameID(0);
+    setGameID(0);
     setAttempts('');
-    setGuess('');
+    setCombo('');
     setGuessHistory([]);
     setHighScores([]);
+    setResults([]);
+    setHighScores([]);
+    setEndGame(false);
   }
   const url = 'http://localhost:3000/api';
 
@@ -53,9 +57,20 @@ function App() {
       .catch((e)=> console.log(e))
   }
 
+  const getHighScores = (difficulty) => {
+
+  }
+
+  const getHint = (gameID) => {
+    axios.get(`${url}/getHint`, { params: { gameID } })
+    .then((r) => setHint(r.data.hint))
+    .catch((e) => console.log(e))
+  }
+
   return (
     <div>
       <h1>Ultimate Mastermind</h1>
+      <button onClick={() => resetAll()}>Reset Game</button>
 
       <h3>What is your name?</h3>
       <div><input onChange={(e) => setUsername(e.target.value)} value={username} placeholder="no space, case sensitive"></input>
@@ -63,7 +78,7 @@ function App() {
       </div>
 
       <h3>Set difficulty. 4-6</h3>
-      <input onChange={(e) => setDifficulty(e.target.value)} value={difficulty} placeholder="enter a number 4-6"></input>
+      <input onChange={(e) => setDifficulty(Number(e.target.value))} value={difficulty} placeholder="enter a number 4-6"></input>
       {difficulty >= 4 && difficulty <=6 ? <h4>Difficulty OK!</h4> : <h4>Valid difficulty is a number 4-6.</h4>}
 
       <h3>Select game mode. solo, pvp1</h3>
@@ -77,6 +92,10 @@ function App() {
       <input onChange={(e) => setCombo(e.target.value)} value={combo} placeholder="example 0123"></input>
       {mode && username && combo.length === difficulty && attempts < 10 ? <button onClick={() => makeGuess()}>Make Guess</button> : null}
       <p>attempts left: {10-attempts}</p>
+      <button onClick={() => getHint(gameID)}>Hint</button>
+      {hint.total !== undefined ? <p>First digit is: {hint.first}, Last digit is: {hint.last}, Total equals: {hint.total}</p> : null}
+
+
       <h3>Guess History</h3>
       <GuessHistory results={results} endGame={endGame} difficulty={difficulty}/>
       {endGame && results[results.length-1].loc === difficulty ? <p>All correct. YOU WON!</p> : null}

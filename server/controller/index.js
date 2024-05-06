@@ -27,11 +27,7 @@ async function createGame(req, res) {
 }
 
 function makeGuess(req, res) {
-  const gameID = req.body.gameID;
-  const guess = req.body.guess;
-  const username = req.body.username;
-  const attempts = req.body.attempts;
-  const difficulty = req.body.difficulty;
+  const { gameID, guess, username, attempts, difficulty } = req.body;
   let endGame = false;
 
   getAnswer(gameID)
@@ -53,7 +49,7 @@ function makeGuess(req, res) {
 }
 
 function getHint(req, res) {
-  const gameID = req.body.gameID;
+  const gameID = req.query.gameID;
   getAnswer(gameID)
     .then((result) => {
       const answer = result.rows[0].answer;
