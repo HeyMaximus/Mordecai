@@ -25,7 +25,7 @@ function resolveGame(status, solved, attempts, username, gameID) {
 function createHighScores(difficulty) {
   const queryStr = `SELECT username, attempts FROM games
   WHERE difficulty=$1 AND mode='solo' AND solved='t' AND status='completed'
-  ORDER BY attempts DESC
+  ORDER BY attempts ASC
   LIMIT 5;`;
   return pool.query(queryStr, [difficulty]);
 }

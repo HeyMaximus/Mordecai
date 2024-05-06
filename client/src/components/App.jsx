@@ -2,6 +2,7 @@ import React, { useState, useEffect, createContext } from "react";
 import axios from 'axios';
 
 import GuessHistory from './GuessHistory.jsx'
+import HighScores from './HighScores.jsx'
 
 function App() {
   const [username, setUsername] = useState("");
@@ -58,7 +59,9 @@ function App() {
   }
 
   const getHighScores = (difficulty) => {
-
+    axios.get(`${url}/getHighScores`, { params: { difficulty } })
+    .then((r) => setHighScores(r.data))
+    .catch((e) => console.log(e))
   }
 
   const getHint = (gameID) => {
@@ -71,6 +74,9 @@ function App() {
     <div>
       <h1>Ultimate Mastermind</h1>
       <button onClick={() => resetAll()}>Reset Game</button>
+
+      <button onClick={() => getHighScores(difficulty)}>High Scores</button>
+      <HighScores highScores={highScores} />
 
       <h3>What is your name?</h3>
       <div><input onChange={(e) => setUsername(e.target.value)} value={username} placeholder="no space, case sensitive"></input>

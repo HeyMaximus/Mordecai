@@ -63,7 +63,8 @@ function getHint(req, res) {
 }
 
 function getHighScores(req, res) {
-  const difficulty = req.body.difficulty;
+  console.log("difficulty: ", req.query.difficulty);
+  const difficulty = req.query.difficulty;
   createHighScores(difficulty)
     .then((highScores) => res.status(200).json(highScores.rows))
     .catch((error) => {
