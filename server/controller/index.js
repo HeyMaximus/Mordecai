@@ -11,7 +11,7 @@ const { genAnswer, analyzeGuess, createHint } = require("./helper");
 async function createGame(req, res) {
   try {
     const status = req.body.mode === "solo" ? "started" : "created";
-    const answer = await genAnswer(req.body.difficulty);
+    const answer = req.body.combo !== undefined ? req.body.combo : await genAnswer(req.body.difficulty);
     const gameID = await insertGame(
       req.body.mode,
       status,
