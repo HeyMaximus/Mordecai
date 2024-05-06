@@ -1,6 +1,6 @@
 import React, { useState, useEffect, createContext } from "react";
 
-function GuessHistory({results}) {
+function GuessHistory({results, endGame, difficulty}) {
 
   return (
     <div>

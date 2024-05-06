@@ -13,6 +13,7 @@ function App() {
   const [guessHistory, setGuessHistory] = useState([]);
   const [results, setResults] = useState([])
   const [highScores, setHighScores] = useState([]);
+  const [endGame, setEndGame] = useState(false);
 
   const resetAll = () => {
     setUsername('');
@@ -44,8 +45,9 @@ function App() {
             guess: combo,
             loc: r.data.correctLoc,
             num: r.data.correctNum
-      }
-      setResults([...results, guessResult])
+      };
+      setResults([...results, guessResult]);
+      if (r.data.endGame) setEndGame(true);
       }
       )
       .catch((e)=> console.log(e))
@@ -56,11 +58,11 @@ function App() {
       <h1>Ultimate Mastermind</h1>
 
       <h3>What is your name?</h3>
-      <div><input onChange={(e) => setUsername(e.target.value)} value={username} placeholder="username, no spaces"></input>
+      <div><input onChange={(e) => setUsername(e.target.value)} value={username} placeholder="no space, case sensitive"></input>
       {username.length > 0 ? <h4>Username OK!</h4> : <h4>Still need a username</h4>}
       </div>
 
-      <h3>Select difficulty. 4-6</h3>
+      <h3>Set difficulty. 4-6</h3>
       <input onChange={(e) => setDifficulty(e.target.value)} value={difficulty} placeholder="enter a number 4-6"></input>
       {difficulty >= 4 && difficulty <=6 ? <h4>Difficulty OK!</h4> : <h4>Valid difficulty is a number 4-6.</h4>}
 
@@ -76,7 +78,9 @@ function App() {
       {mode && username && combo.length === difficulty && attempts < 10 ? <button onClick={() => makeGuess()}>Make Guess</button> : null}
       <p>attempts left: {10-attempts}</p>
       <h3>Guess History</h3>
-      <GuessHistory results={results}/>
+      <GuessHistory results={results} endGame={endGame} difficulty={difficulty}/>
+      {endGame && results[results.length-1].loc === difficulty ? <p>All correct. YOU WON!</p> : null}
+      {endGame && results[results.length-1].loc !== difficulty ? <p>You ran out of attempts</p> : null}
       </div>
       :null
       }

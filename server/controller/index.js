@@ -1,4 +1,3 @@
-const axios = require("axios");
 const {
   insertGame,
   getAnswer,
@@ -7,42 +6,24 @@ const {
   checkOpenGame,
   changeGameStatus,
 } = require("../model");
-const { analyzeGuess, createHint } = require("./helper");
+const { genAnswer, analyzeGuess, createHint } = require("./helper");
 
-function createGame(req, res) {
-  const status = req.body.mode === "solo" ? "started" : "created";
-  const genAnswerUrl = process.env.GEN_URL;
-  const ansParams = {
-    params: {
-      num: req.body.difficulty,
-      min: 0,
-      max: 7,
-      col: 1,
-      base: 10,
-      format: "plain",
-      rnd: "new",
-    },
-  };
-  axios
-    .get(genAnswerUrl, ansParams)
-    .then((answer) => {
-      let answerStr = answer.data.split('\n')
-      answerStr.pop();
-      answerStr = answerStr.join('')
-      return insertGame(
-        req.body.mode,
-        status,
-        req.body.difficulty,
-        answerStr,
-        req.body.username
-      )
-    }
-    )
-    .then((gameID) => res.status(201).json({ gameID: gameID.rows[0].id }))
-    .catch((error) => {
-      res.sendStatus(500);
-      console.log("insertGame error: ", error);
-    });
+async function createGame(req, res) {
+  try {
+    const status = req.body.mode === "solo" ? "started" : "created";
+    const answer = await genAnswer(req.body.difficulty);
+    const gameID = await insertGame(
+      req.body.mode,
+      status,
+      req.body.difficulty,
+      answer,
+      req.body.username
+    );
+    res.status(201).json({ gameID: gameID.rows[0].id });
+  } catch (error) {
+    res.sendStatus(500);
+    console.log("insertGame error: ", error);
+  }
 }
 
 function makeGuess(req, res) {
@@ -87,9 +68,12 @@ function getHint(req, res) {
 
 function getHighScores(req, res) {
   const difficulty = req.body.difficulty;
-  createHighScores(difficulty).then((highScores) =>
-    res.status(200).json(highScores.rows)
-  );
+  createHighScores(difficulty)
+    .then((highScores) => res.status(200).json(highScores.rows))
+    .catch((error) => {
+      res.sendStatus(500);
+      console.log("genHighScore error: ", error);
+    });
 }
 
 function openGame(req, res) {

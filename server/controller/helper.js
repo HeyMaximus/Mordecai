@@ -1,3 +1,29 @@
+const axios = require("axios");
+
+async function genAnswer(difficulty) {
+  try {
+    const genAnswerUrl = process.env.GEN_URL;
+    const ansParams = {
+      params: {
+        num: difficulty,
+        min: 0,
+        max: 7,
+        col: 1,
+        base: 10,
+        format: "plain",
+        rnd: "new",
+      },
+    };
+    const answer = await axios.get(genAnswerUrl, ansParams);
+    let answerStr = answer.data.split("\n");
+    answerStr.pop();
+    answerStr = answerStr.join("");
+    return await answerStr;
+  } catch (error) {
+    console.log("genAnswer error: ", error);
+  }
+}
+
 function analyzeGuess(guess, answer) {
   let correctLoc = 0;
   let correctNum = 0;
@@ -11,7 +37,7 @@ function analyzeGuess(guess, answer) {
     if (guessNum === answerNum) {
       correctLoc += 1;
     } else {
-      freqMap[answerNum] = freqMap[answerNum] ? freqMap[answerNum] += 1 : 1;
+      freqMap[answerNum] = freqMap[answerNum] ? (freqMap[answerNum] += 1) : 1;
       remainders.push(guessNum);
     }
   }
@@ -23,14 +49,17 @@ function analyzeGuess(guess, answer) {
     }
   }
   correctNum = correctNum + correctLoc;
-  return { correctNum, correctLoc }
+  return { correctNum, correctLoc };
 }
 
 function createHint(answer) {
   const first = Number(answer[0]);
-  const last = Number(answer[answer.length-1]);
-  const total = answer.split('').map(x => parseInt(x)).reduce((accu, curr) => accu + curr, 0);
-  return { first, last, total }
+  const last = Number(answer[answer.length - 1]);
+  const total = answer
+    .split("")
+    .map((x) => parseInt(x))
+    .reduce((accu, curr) => accu + curr, 0);
+  return { first, last, total };
 }
 
-module.exports = { analyzeGuess, createHint }
+module.exports = { analyzeGuess, createHint, genAnswer };
