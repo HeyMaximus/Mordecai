@@ -3,6 +3,7 @@ import axios from 'axios';
 import GuessHistory from './GuessHistory.jsx';
 import HighScores from './HighScores.jsx';
 import { socket } from '../socket.jsx';
+import './App.css';
 
 function App() {
   const [username, setUsername] = useState("");
@@ -151,16 +152,18 @@ function App() {
 
     {showV1 ?
     <div>
-      <h3>Enter name:</h3>
+      <h3>Username:</h3>
       <input onChange={(e) => setUsername(e.target.value)} value={username} placeholder="no space, case sensitive"></input>
       {username.length > 0 ? <h5 style={{ color: 'green' }}>Username OK!</h5> : <h5 style={{ color: 'red' }}>Still need a username</h5>}
       <br/>
 
-      <h3>Enter difficulty &#x28;4-6&#x29;:</h3>
+      <h3>Difficulty Level&#x28;4-6&#x29;:</h3>
+      <h6>4 = normal&#x28;default&#x29; | 5 = veteran | 6 = nightmare</h6>
       <input onChange={(e) => setDifficulty(Number(e.target.value))} value={difficulty} placeholder="enter a number 4-6"></input>
       {difficulty >= 4 && difficulty <=6 ? <h5 style={{ color: 'green' }} >Difficulty OK!</h5> : <h5>Please enter a number 4-6.</h5>}
       <br/>
-      <h3>Enter game mode:</h3>
+      <h3>Game mode:</h3>
+      <h6>solo = against PC | pvp1 = multiplayer&#x28;async&#x29; | pvp2 = multiplayer&#x28;real time&#x29;</h6>
       <input onChange={(e) => setMode(e.target.value)} value={mode} placeholder="solo, pvp1, or pvp2?"></input>
       {mode === 'solo' || mode ==='pvp1' || mode === 'pvp2' ? <h5 style={{ color: 'green' }}>Mode OK!</h5> : <h5>Need valid mode input.</h5>}
       {mode === 'solo' && username && difficulty ? <button onClick={() => {createGame(); setShowV1(false);}}>Start!</button> : null}
@@ -169,9 +172,9 @@ function App() {
 
       {mode === 'pvp1' && showV4 ?
       <div>
-      <h3>JOIN or CREATE a game to share.</h3>
       {showV3 ?
       <div>
+      <h3>CREATE a game to share</h3>
       <h5>Enter a {difficulty} numbers code, using numbers 0-7.</h5>
       <input onChange={(e) => setCombo(e.target.value)} value={combo} placeholder="enter your code"></input>
       {combo.length === difficulty ? <button onClick={() => {createGame(username, difficulty, mode); setShowV1(false);}}>Create Game</button> : null}
@@ -182,7 +185,8 @@ function App() {
       <br/>
       <br/>
       {combo.length ? null : <div>
-      <h5>Enter a game ID to play against your friend.</h5>
+      <h3>JOIN a game</h3>
+      <h5>Enter a game ID shared with you</h5>
       <input onChange={(e) => {setGameID(e.target.value); setShowV3(false);}} value={gameID} placeholder="example 23"></input>
       <button onClick={() => {openGame(gameID); setShowV1(false); setShowV2(true); setShowV4(false);}}>Join Game</button>
         </div>}

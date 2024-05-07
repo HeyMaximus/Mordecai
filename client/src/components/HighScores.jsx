@@ -5,7 +5,7 @@ function HighScores({ highScores }) {
     <div>
       {highScores.map((x, i) => (
         <div key={i}>
-          {i + 1}: User: {x.username} using {x.attempts} attempts.
+          {i + 1}: {x.username} using {x.attempts} attempts.
         </div>
       ))}
     </div>

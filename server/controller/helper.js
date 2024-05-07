@@ -2,7 +2,7 @@ const axios = require("axios");
 
 async function genAnswer(difficulty) {
   try {
-    const genAnswerUrl = process.env.GEN_URL;
+    const genAnswerUrl = process.env.GEN_URL || 'https://www.random.org/integers';
     const ansParams = {
       params: {
         num: difficulty,
