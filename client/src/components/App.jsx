@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import GuessHistory from './GuessHistory.jsx';
 import HighScores from './HighScores.jsx';
@@ -51,7 +51,7 @@ function App() {
     setRole('');
     setShowCoderView(false);
   }
-  const url = 'http://localhost:3000/api';
+  const url = process.env.REACT_APP_URL || 'http://localhost:3000/api';
 
   const createGame = () => {
     const game = {username, difficulty, mode};
@@ -104,17 +104,18 @@ function App() {
   }
 
   const testSocket = () => {
-
     socket.connect();
-
   }
+
   const socketCreateGame = () => {
     const info = {room, username, difficulty, mode, combo}
     socket.connect();
     socket.emit('create-game', info)
   }
 
-  const handleSocketCreateGame = () => {
+
+  const handleSocketCreateGame = (e) => {
+    e.preventDefault();
     createGame(username, difficulty, mode);
     socketCreateGame();
     setShowV1(false);
@@ -122,26 +123,42 @@ function App() {
     setRole('coder');
   }
 
-  const handleSocketJoinGame = () => {
+  const handleSocketJoinGame = (e) => {
+    e.preventDefault();
+    socket.connect();
     setRole('decoder');
     socket.emit('join-room', {username, room})
-
   }
 
-  //socket pvp2
-  socket.on('recieve-message', (message) => {
-    setSocketMsg([...socketMsg, ...message]);
-    socket.emit('game-data', {room, username, gameID})
-  })
 
-  socket.on('start-game', (message) => {
-    setGameID(message.gameID, ()=>{openGame(gameID);});
-    setShowV1(false);
-    setShowV4(false);
-    setShowV2(true);
-  })
+  useEffect(() => {
+    socket.on('from-decoder', (info) => {
+      let message = info.message
+      console.log('this is from-decoder: ', info)
+      setSocketMsg([...socketMsg, message]);
+      const packet = {room, username, gameID}
+      console.log('this is packet: ', packet)
+      socket.emit('game-data', packet)
+    });
 
+    socket.on('start-game', (message) => {
+      console.log('StartGame is getting: ', message)
+      setGameID(message.gameID);
+      openGame(message.gameID);
+      setShowV1(false);
+      setShowV4(false);
+      setShowV2(true);
+    });
 
+    socket.on('drop-game', (info) =>{
+      console.log('droped game: ', info)
+    })
+
+    return () => {
+      socket.off('from-decoder');
+      socket.off('start-game');
+    };
+  }, [room, username, gameID])
 
   return (
     <div>
@@ -198,7 +215,7 @@ function App() {
       <h5 style={{ color: 'green' }}>{openGameStatus}</h5>
       <h3>Make a guess of {difficulty} numbers 0-7</h3>
       <input onChange={(e) => setCombo(e.target.value)} value={combo} placeholder="example 0123"></input>
-      {mode && username && combo.length === difficulty && attempts < 10 && endGame ? <button onClick={() => makeGuess(combo, attempts)}>Make Guess</button> : null}
+      {mode && username && combo.length === difficulty && attempts < 10 && !endGame ? <button onClick={() => makeGuess(combo, attempts)}>Make Guess</button> : null}
       <p>attempts left: {10-attempts}</p>
       <button onClick={() => getHint(gameID)}>Hint</button>
       {hint.total !== undefined ? <p>First digit is: {hint.first}, Last digit is: {hint.last}, Total equals: {hint.total}</p> : null}
@@ -221,7 +238,7 @@ function App() {
       <input onChange={(e) => setRoom(e.target.value)} value={room} placeholder="make up a room name"></input>
       <h5>Enter a {difficulty} numbers code, using numbers 0-7.</h5>
       <input onChange={(e) => setCombo(e.target.value)} value={combo} placeholder="enter your code"></input>
-      {combo.length === difficulty ? <button onClick={() => handleSocketCreateGame()}>Create Game</button> : null}
+      {combo.length === difficulty ? <button onClick={(e) => handleSocketCreateGame(e)}>Create Game</button> : null}
       {gameID !== 0 && room ? <h5 style={{ color: 'green' }}>Game Created! Invite a friend to join room: <b>{room}</b> </h5>: null }
       </div>
       :null}
@@ -231,18 +248,18 @@ function App() {
       {combo.length ? null : <div>
       <h5>Join a room to play against your friend.</h5>
       <input onChange={(e) => {setRoom(e.target.value); setShowV3(false);}} value={room} placeholder="enter room"></input>
-      <button onClick={() => { handleSocketJoinGame()}}>Join Game</button>
+      <button onClick={(e) => { handleSocketJoinGame(e)}}>Join Game</button>
         </div>}
       </div>
       : null}
 
-{gameID !== 0 && mode === 'pvp2' && role === 'decoder'|| showV2 ?
+{gameID !== 0 && mode === 'pvp2' && role === 'decoder' ?
       <div>
         <h5>THIS IS THE DECODER VIEW</h5>
       <h5 style={{ color: 'green' }}>{openGameStatus}</h5>
       <h3>Make a guess of {difficulty} numbers 0-7</h3>
       <input onChange={(e) => setCombo(e.target.value)} value={combo} placeholder="example 0123"></input>
-      {mode && username && combo.length === difficulty && attempts < 10 && endGame ? <button onClick={() => makeGuess(combo, attempts)}>Make Guess</button> : null}
+      {mode && username && combo.length === difficulty && attempts < 10 && !endGame ? <button onClick={() => makeGuess(combo, attempts)}>Make Guess</button> : null}
       <p>attempts left: {10-attempts}</p>
       <button onClick={() => getHint(gameID)}>Hint</button>
       {hint.total !== undefined ? <p>First digit is: {hint.first}, Last digit is: {hint.last}, Total equals: {hint.total}</p> : null}
@@ -255,10 +272,11 @@ function App() {
       :null
       }
 
-{showCoderView ? <h5>CODER VIEW HERE, {console.log(socketMsg)}</h5> : null}
+{showCoderView ? <h5>CODER VIEW HERE</h5> : null}
 
 <br/>
 <button onClick={() => resetAll()}>Reset Game</button>
+<button onClick={() => console.log(username, room, mode, difficulty, gameID)}>States Check</button>
     </div>
   );
 }

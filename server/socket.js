@@ -14,22 +14,21 @@ const {
 } = require("./controller");
 
 io.on("connection", (socket) => {
-  console.log("THIS IS SOCKET.ID: ", socket.id);
+  console.log("A SOCKET.ID CONNECTED: ", socket.id);
   socket.on("create-game", (info) => {
     console.log("this is recieved: ", info);
     socket.join(info.room);
   });
 
   socket.on("join-room", (info) => {
+    console.log('JOIN ROOM triggered, room is: ', info.room)
     socket.join(info.room);
-    socket.to(info.room).emit("recieve-message", "DeCoder Joined.");
-    socket
-      .to(info.room)
-      .emit("recieve-message", `You are now playing with ${info.username}`);
+    socket.to(info.room).emit("from-decoder", {message: `DeCoder joined. You are now playing with ${info.username}`});
   });
 
   socket.on("game-data", (info) => {
-    socket.to(info.room).emit("start-game", info.gameID);
+    console.log('game data triggered: ', info)
+    socket.to(info.room).emit("start-game", info);
   });
 
   socket.on("make-guess", () => {});
