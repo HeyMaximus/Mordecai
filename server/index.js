@@ -5,6 +5,7 @@ const cors = require("cors");
 const db = require("./db");
 const morgan = require("morgan");
 const router = require("./routes");
+const io = require('./socket')
 
 const app = express();
 app.use(express.json());
