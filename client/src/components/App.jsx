@@ -17,13 +17,16 @@ function App() {
   const [hint, setHint] = useState({});
   const [endGame, setEndGame] = useState(false);
   const [room, setRoom] = useState('');
-  const [openGameStatus, setOpenGameStatus] = useState('')
+  const [openGameStatus, setOpenGameStatus] = useState('');
+  const [socketMsg, setSocketMsg] = useState([]);
+  const [role, setRole] = useState('')
 
   //views
   const [showV1, setShowV1] = useState(true);
   const [showV2, setShowV2] = useState(false);
   const [showV3, setShowV3] = useState(true);
   const [showV4, setShowV4] = useState(true);
+  const [showCoderView, setShowCoderView] = useState(false);
 
   const resetAll = () => {
     setUsername('');
@@ -42,6 +45,10 @@ function App() {
     setShowV2(false);
     setShowV3(true);
     setShowV4(true);
+
+    setSocketMsg([]);
+    setRole('');
+    setShowCoderView(false);
   }
   const url = 'http://localhost:3000/api';
 
@@ -96,10 +103,44 @@ function App() {
   }
 
   const testSocket = () => {
+
+    socket.connect();
+
+  }
+  const socketCreateGame = () => {
     const info = {room, username, difficulty, mode, combo}
     socket.connect();
     socket.emit('create-game', info)
   }
+
+  const handleSocketCreateGame = () => {
+    createGame(username, difficulty, mode);
+    socketCreateGame();
+    setShowV1(false);
+    setShowCoderView(true);
+    setRole('coder');
+  }
+
+  const handleSocketJoinGame = () => {
+    setRole('decoder');
+    socket.emit('join-room', {username, room})
+
+  }
+
+  //socket pvp2
+  socket.on('recieve-message', (message) => {
+    setSocketMsg([...socketMsg, ...message]);
+    socket.emit('game-data', {room, username, gameID})
+  })
+
+  socket.on('start-game', (message) => {
+    setGameID(message.gameID, ()=>{openGame(gameID);});
+    setShowV1(false);
+    setShowV4(false);
+    setShowV2(true);
+  })
+
+
 
   return (
     <div>
@@ -159,28 +200,60 @@ function App() {
       {hint.total !== undefined ? <p>First digit is: {hint.first}, Last digit is: {hint.last}, Total equals: {hint.total}</p> : null}
 
       <h3>Guess History</h3>
-      <GuessHistory results={results} endGame={endGame} difficulty={difficulty}/>
+      <GuessHistory results={results}/>
       {endGame && results[results.length-1].loc === difficulty ? <p style={{ color: 'green' }}>All correct. YOU WON!</p> : null}
       {endGame && results[results.length-1].loc !== difficulty ? <p style={{ color: 'red' }}>You ran out of attempt.</p> : null}
       </div>
       :null
       }
 
-
 {mode === 'pvp2'?
-      <div>
-      <h3>Join or Create a game.</h3>
-      <p>Enter a {difficulty} numbers combination, using numbers 0-7.</p>
-      <input onChange={(e) => setCombo(e.target.value)} value={combo} placeholder="example 0123"></input>
-      <button onClick={() => createGame(username, difficulty, mode)}>Create Game</button>
-      {gameID !== 0 ? <p>Game Created!{gameID} </p>: null }
 
-      <p>Enter a game ID to play against your friend.</p>
-      <input onChange={(e) => setGameID(e.target.value)} value={gameID} placeholder="example 23"></input>
-      <button onClick={() => openGame(gameID)}>Join Game</button>
+      <div>
+      <h3>JOIN or CREATE a game in real time.</h3>
+      {showV3 ?
+      <div>
+      <h5>Enter a room name.</h5>
+      <input onChange={(e) => setRoom(e.target.value)} value={room} placeholder="make up a room name"></input>
+      <h5>Enter a {difficulty} numbers code, using numbers 0-7.</h5>
+      <input onChange={(e) => setCombo(e.target.value)} value={combo} placeholder="enter your code"></input>
+      {combo.length === difficulty ? <button onClick={() => handleSocketCreateGame()}>Create Game</button> : null}
+      {gameID !== 0 && room ? <h5 style={{ color: 'green' }}>Game Created! Invite a friend to join room: <b>{room}</b> </h5>: null }
+      </div>
+      :null}
+
+      <br/>
+      <br/>
+      {combo.length ? null : <div>
+      <h5>Join a room to play against your friend.</h5>
+      <input onChange={(e) => {setRoom(e.target.value); setShowV3(false);}} value={room} placeholder="enter room"></input>
+      <button onClick={() => { handleSocketJoinGame()}}>Join Game</button>
+        </div>}
       </div>
       : null}
 
+{gameID !== 0 && mode === 'pvp2' && role === 'decoder'|| showV2 ?
+      <div>
+        <h5>THIS IS THE DECODER VIEW</h5>
+      <h5 style={{ color: 'green' }}>{openGameStatus}</h5>
+      <h3>Make a guess of {difficulty} numbers 0-7</h3>
+      <input onChange={(e) => setCombo(e.target.value)} value={combo} placeholder="example 0123"></input>
+      {mode && username && combo.length === difficulty && attempts < 10 && endGame ? <button onClick={() => makeGuess(combo, attempts)}>Make Guess</button> : null}
+      <p>attempts left: {10-attempts}</p>
+      <button onClick={() => getHint(gameID)}>Hint</button>
+      {hint.total !== undefined ? <p>First digit is: {hint.first}, Last digit is: {hint.last}, Total equals: {hint.total}</p> : null}
+
+      <h3>Guess History</h3>
+      <GuessHistory results={results}/>
+      {endGame && results[results.length-1].loc === difficulty ? <p style={{ color: 'green' }}>All correct. YOU WON!</p> : null}
+      {endGame && results[results.length-1].loc !== difficulty ? <p style={{ color: 'red' }}>You ran out of attempt.</p> : null}
+      </div>
+      :null
+      }
+
+{showCoderView ? <h5>CODER VIEW HERE, {console.log(socketMsg)}</h5> : null}
+
+<br/>
 <button onClick={() => resetAll()}>Reset Game</button>
     </div>
   );

@@ -11,7 +11,10 @@ const { genAnswer, analyzeGuess, createHint } = require("./helper");
 async function createGame(req, res) {
   try {
     const status = req.body.mode === "solo" ? "started" : "created";
-    const answer = req.body.combo !== undefined ? req.body.combo : await genAnswer(req.body.difficulty);
+    const answer =
+      req.body.combo !== undefined
+        ? req.body.combo
+        : await genAnswer(req.body.difficulty);
     const gameID = await insertGame(
       req.body.mode,
       status,
@@ -76,13 +79,19 @@ function getHighScores(req, res) {
 function openGame(req, res) {
   const gameID = req.query.gameID;
   const username = req.query.username;
+
   checkOpenGame(gameID)
     .then((result) => {
       if (result.rows[0] === undefined) {
         res.status(200).json({ gameStatus: "Game not found." });
       } else if (result.rows[0].status === "created") {
         changeGameStatus(username, gameID);
-        res.status(201).json({ gameStatus: "Do your best!", difficulty: result.rows[0].difficulty });
+        res
+          .status(201)
+          .json({
+            gameStatus: "Do your best!",
+            difficulty: result.rows[0].difficulty,
+          });
       } else {
         res.status(200).json({ gameStatus: "Game already used." });
       }
