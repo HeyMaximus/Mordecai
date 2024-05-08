@@ -22,13 +22,10 @@ function App() {
   const [openGameStatus, setOpenGameStatus] = useState('');
   const [socketMsg, setSocketMsg] = useState([]);
   const [role, setRole] = useState('');
-
   const [lastGuessResult, setLastGuessResult] = useState({});
   const [didLie, setDidLie] = useState(false);
   const [caughtLie, setCaughtLie] = useState(false);
   const [dropGame, setDropGame] = useState(false);
-
-  //views
   const [showV1, setShowV1] = useState(true);
   const [showV2, setShowV2] = useState(false);
   const [showV3, setShowV3] = useState(true);
@@ -45,16 +42,20 @@ function App() {
     setCombo('');
     setGuessHistory([]);
     setHighScores([]);
+    setHint({});
     setResults([]);
     setHighScores([]);
     setEndGame(false);
+    setRoom('');
     setLastGuessResult({});
-
+    setOpenGameStatus('');
+    setDidLie(false);
+    setCaughtLie(false);
+    setDropGame(false);
     setShowV1(true);
     setShowV2(false);
     setShowV3(true);
     setShowV4(true);
-
     setSocketMsg([]);
     setRole('');
     setShowCoderView(false);
@@ -105,7 +106,6 @@ function App() {
   const openGame = (gameID) => {
     axios.get(`${url}/openGame`, { params: { gameID, username } })
     .then((r) => {
-      console.log(r.data.gameStatus);
       setDifficulty(r.data.difficulty);
       setOpenGameStatus(r.data.gameStatus);
     })
@@ -156,14 +156,11 @@ function App() {
       username: username,
       didLie: true,
     }
-    console.log('lying with', lie);
     socket.emit('respond-guess', lie);
   }
   const tellTruth = (e) => {
-    e.preventDefault()
-    console.log(lastGuessResult)
+    e.preventDefault();
     const info = {...lastGuessResult, room, didLie: false};
-    console.log('truth telling with', info);
     socket.emit('respond-guess', info);
   }
 
@@ -171,22 +168,19 @@ function App() {
     if (didLie) {
       setEndGame(true);
       setCaughtLie(true);
-      socket.emit('call-bluff', {room, endGame: true})
+      socket.emit('call-bluff', {room, endGame: true});
     }
   }
 
   useEffect(() => {
     socket.on('from-decoder', (info) => {
-      let message = info.message
-      console.log('this is from-decoder: ', info)
+      let message = info.message;
       setSocketMsg([...socketMsg, message]);
-      const packet = {room, username, gameID, difficulty}
-      console.log('this is packet: ', packet)
-      socket.emit('game-data', packet)
+      const packet = {room, username, gameID, difficulty};
+      socket.emit('game-data', packet);
     });
 
     socket.on('start-game', (message) => {
-      console.log('StartGame is getting: ', message)
       setGameID(message.gameID);
       openGame(message.gameID);
       setShowV1(false);
@@ -195,7 +189,6 @@ function App() {
     });
 
     socket.on('make-guess', (info) => {
-        console.log('the decoder made this guess', info)
         setLastGuessResult(info)
         let message = `${info.username} guess ${info.combo}. ${info.correctNum} correct numbers, ${info.correctLoc} correct locations.`
         setSocketMsg([...socketMsg, message]);
@@ -204,7 +197,6 @@ function App() {
     })
 
     socket.on('respond-guess', (info) => {
-      console.log('This is response from coder', info)
       let newResult = {
         guess: info.combo,
         num: info.correctNum,
@@ -221,7 +213,6 @@ function App() {
     })
 
     socket.on('drop-game', (info) =>{
-      console.log('drop-game triggered: ', info)
       setEndGame(true);
       setDropGame(true);
     });
@@ -297,8 +288,8 @@ function App() {
 
       <h3>Guess History</h3>
       <GuessHistory results={results}/>
-      {endGame && results[results.length-1].loc === difficulty ? <p style={{ color: 'green' }}>All correct. YOU WIN!</p> : null}
-      {endGame && results[results.length-1].loc !== difficulty ? <p style={{ color: 'red' }}>You ran out of attempt.</p> : null}
+      {endGame && results[results.length-1].loc === difficulty ? <p style={{ color: 'green' }}>All correct. YOU WIN! Reset Game to continue.</p> : null}
+      {endGame && results[results.length-1].loc !== difficulty ? <p style={{ color: 'red' }}>You ran out of attempts. Reset Game to continue.</p> : null}
       </div>
       :null
       }
@@ -343,7 +334,7 @@ function App() {
       <GuessHistory results={results}/>
       {endGame && results[results.length-1].loc === difficulty ? <p style={{ color: 'green' }}>All correct. YOU WON!</p> : null}
       {endGame && caughtLie ? <p style={{ color: 'green' }}>You caught the lie! YOU WIN!</p> : null}
-      {endGame && results[results.length-1].loc !== difficulty ? <p style={{ color: 'red' }}>You ran out of attempt.</p> : null}
+      {endGame && results[results.length-1].loc !== difficulty && !caughtLie ? <p style={{ color: 'red' }}>You ran out of attempts.</p> : null}
       <button onClick={(e) => handleCallBluff(e)}>Call Bluff!</button>
       </div>
       :null
@@ -354,9 +345,9 @@ function App() {
 <h5>Playing in {room}.</h5>
 <CoderView socketMsg={socketMsg} tellTruth={tellTruth} tellLie={tellLie} endGame={endGame}/>
 <p>Player has {10-attempts} left.</p>
-      {endGame && lastGuessResult.correctLoc === difficulty ? <p style={{ color: 'red' }}>Your code was cracked!</p> : null}
-      {endGame && caughtLie ? <p style={{ color: 'red' }}>You were caught lying!</p> : null}
-      {endGame && lastGuessResult.correctLoc !== difficulty ? <p style={{ color: 'green' }}>Player ran out of attempts. You win!</p> : null}
+      {endGame && lastGuessResult.correctLoc === difficulty ? <p style={{ color: 'red' }}>Your code was cracked! Tell Truth to let them know. Then Reset Game to continue.</p> : null}
+      {endGame && caughtLie ? <p style={{ color: 'red' }}>You were caught lying! You loose.</p> : null}
+      {endGame && lastGuessResult.correctLoc !== difficulty && !caughtLie ? <p style={{ color: 'green' }}>Player ran out of attempts. Tell Truth to let them know. YOU WIN!</p> : null}
 </div>
 : null}
 
@@ -364,7 +355,6 @@ function App() {
 <br/>
 {endGame && dropGame ? <h3>Player has disconnected. Rest Game to continue.</h3> : null}
 <button onClick={() => resetAll()}>Reset Game</button>
-<button onClick={() => console.log(username, room, mode, difficulty, gameID)}>States Check</button>
     </div>
   );
 }

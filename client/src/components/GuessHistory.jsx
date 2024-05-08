@@ -1,8 +1,6 @@
 import React from "react";
 
 function GuessHistory({ results }) {
-
-
   return (
     <div>
       {results.map((x, i) => (
