@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import GuessHistory from './GuessHistory.jsx';
 import HighScores from './HighScores.jsx';
+import CoderView from './CoderView.jsx';
 import { socket } from '../socket.jsx';
 import './App.css';
 
@@ -20,7 +21,12 @@ function App() {
   const [room, setRoom] = useState('');
   const [openGameStatus, setOpenGameStatus] = useState('');
   const [socketMsg, setSocketMsg] = useState([]);
-  const [role, setRole] = useState('')
+  const [role, setRole] = useState('');
+
+  const [lastGuessResult, setLastGuessResult] = useState({});
+  const [didLie, setDidLie] = useState(false);
+  const [caughtLie, setCaughtLie] = useState(false);
+  const [dropGame, setDropGame] = useState(false);
 
   //views
   const [showV1, setShowV1] = useState(true);
@@ -28,6 +34,7 @@ function App() {
   const [showV3, setShowV3] = useState(true);
   const [showV4, setShowV4] = useState(true);
   const [showCoderView, setShowCoderView] = useState(false);
+  const [pvp2InitView, setpvp2InitView] = useState(true);
 
   const resetAll = () => {
     setUsername('');
@@ -41,6 +48,7 @@ function App() {
     setResults([]);
     setHighScores([]);
     setEndGame(false);
+    setLastGuessResult({});
 
     setShowV1(true);
     setShowV2(false);
@@ -50,6 +58,7 @@ function App() {
     setSocketMsg([]);
     setRole('');
     setShowCoderView(false);
+    setpvp2InitView(true);
   }
   const url = process.env.REACT_APP_URL || 'http://localhost:3000/api';
 
@@ -103,9 +112,6 @@ function App() {
     .catch((e) => console.log(e))
   }
 
-  const testSocket = () => {
-    socket.connect();
-  }
 
   const socketCreateGame = () => {
     const info = {room, username, difficulty, mode, combo}
@@ -113,30 +119,68 @@ function App() {
     socket.emit('create-game', info)
   }
 
-
   const handleSocketCreateGame = (e) => {
     e.preventDefault();
     createGame(username, difficulty, mode);
     socketCreateGame();
     setShowV1(false);
     setShowCoderView(true);
+    setpvp2InitView(false);
     setRole('coder');
   }
 
   const handleSocketJoinGame = (e) => {
     e.preventDefault();
+    setpvp2InitView(false);
     socket.connect();
     setRole('decoder');
     socket.emit('join-room', {username, room})
   }
 
+  const handleSocketMakeGuess = (e) => {
+    e.preventDefault();
+    const tries = attempts+1
+    socket.emit('make-guess', {room, username, gameID, difficulty, attempts: tries, combo, role})
+    setAttempts(tries);
+  }
+
+  const tellLie = (e) => {
+    e.preventDefault()
+    const lieNum = lastGuessResult.correctNum > 0 ? lastGuessResult.correctNum - 1 : 0;
+    const lieLoc = lastGuessResult.correctLoc > 0 ? lastGuessResult.correctLoc - 1 : 0;
+    const lie = {
+      combo: lastGuessResult.combo,
+      correctLoc: lieLoc,
+      correctNum: lieNum,
+      room: room,
+      username: username,
+      didLie: true,
+    }
+    console.log('lying with', lie);
+    socket.emit('respond-guess', lie);
+  }
+  const tellTruth = (e) => {
+    e.preventDefault()
+    console.log(lastGuessResult)
+    const info = {...lastGuessResult, room, didLie: false};
+    console.log('truth telling with', info);
+    socket.emit('respond-guess', info);
+  }
+
+  const handleCallBluff = () => {
+    if (didLie) {
+      setEndGame(true);
+      setCaughtLie(true);
+      socket.emit('call-bluff', {room, endGame: true})
+    }
+  }
 
   useEffect(() => {
     socket.on('from-decoder', (info) => {
       let message = info.message
       console.log('this is from-decoder: ', info)
       setSocketMsg([...socketMsg, message]);
-      const packet = {room, username, gameID}
+      const packet = {room, username, gameID, difficulty}
       console.log('this is packet: ', packet)
       socket.emit('game-data', packet)
     });
@@ -150,22 +194,53 @@ function App() {
       setShowV2(true);
     });
 
-    socket.on('drop-game', (info) =>{
-      console.log('droped game: ', info)
+    socket.on('make-guess', (info) => {
+        console.log('the decoder made this guess', info)
+        setLastGuessResult(info)
+        let message = `${info.username} guess ${info.combo}. ${info.correctNum} correct numbers, ${info.correctLoc} correct locations.`
+        setSocketMsg([...socketMsg, message]);
+        setEndGame(info.endGame);
+        setAttempts(info.attempts);
     })
+
+    socket.on('respond-guess', (info) => {
+      console.log('This is response from coder', info)
+      let newResult = {
+        guess: info.combo,
+        num: info.correctNum,
+        loc: info.correctLoc
+      }
+      setEndGame(info.endGame);
+      setDidLie(info.didLie)
+      setResults([...results, newResult]);
+    })
+
+    socket.on('call-bluff', (info) => {
+      setEndGame(info.endGame);
+      setCaughtLie(info.caughtLie)
+    })
+
+    socket.on('drop-game', (info) =>{
+      console.log('drop-game triggered: ', info)
+      setEndGame(true);
+      setDropGame(true);
+    });
 
     return () => {
       socket.off('from-decoder');
       socket.off('start-game');
+      socket.off('make-guess');
+      socket.off('respond-guess');
+      socket.off('call-bluff');
+      socket.off('drop-game');
     };
-  }, [room, username, gameID])
+  }, [room, username, gameID, role, difficulty, socketMsg, results])
 
   return (
     <div>
       <h1>Ultimate Mastermind</h1>
       <button onClick={() => getHighScores(difficulty)}>Show High Scores</button>
       <HighScores highScores={highScores} />
-      <button onClick={() => testSocket()}>Test socket</button>
 
     {showV1 ?
     <div>
@@ -210,7 +285,7 @@ function App() {
       </div>
       : null}
 
-      {gameID !== 0 && mode === 'solo' || showV2 ?
+      {gameID !== 0 && mode === 'solo' || showV2 && mode !== 'pvp2' ?
       <div>
       <h5 style={{ color: 'green' }}>{openGameStatus}</h5>
       <h3>Make a guess of {difficulty} numbers 0-7</h3>
@@ -222,13 +297,13 @@ function App() {
 
       <h3>Guess History</h3>
       <GuessHistory results={results}/>
-      {endGame && results[results.length-1].loc === difficulty ? <p style={{ color: 'green' }}>All correct. YOU WON!</p> : null}
+      {endGame && results[results.length-1].loc === difficulty ? <p style={{ color: 'green' }}>All correct. YOU WIN!</p> : null}
       {endGame && results[results.length-1].loc !== difficulty ? <p style={{ color: 'red' }}>You ran out of attempt.</p> : null}
       </div>
       :null
       }
 
-{mode === 'pvp2'?
+{mode === 'pvp2' && pvp2InitView ?
 
       <div>
       <h3>JOIN or CREATE a game in real time.</h3>
@@ -239,7 +314,7 @@ function App() {
       <h5>Enter a {difficulty} numbers code, using numbers 0-7.</h5>
       <input onChange={(e) => setCombo(e.target.value)} value={combo} placeholder="enter your code"></input>
       {combo.length === difficulty ? <button onClick={(e) => handleSocketCreateGame(e)}>Create Game</button> : null}
-      {gameID !== 0 && room ? <h5 style={{ color: 'green' }}>Game Created! Invite a friend to join room: <b>{room}</b> </h5>: null }
+
       </div>
       :null}
 
@@ -252,29 +327,42 @@ function App() {
         </div>}
       </div>
       : null}
-
-{gameID !== 0 && mode === 'pvp2' && role === 'decoder' ?
+ {gameID !== 0 && room  && role === 'coder' && !dropGame ? <h5 style={{ color: 'green' }}>Game Created! Invite a friend to join room: <b>{room}</b> </h5>: null }
+{gameID !== 0 && mode === 'pvp2' && role === 'decoder' && !dropGame ?
       <div>
-        <h5>THIS IS THE DECODER VIEW</h5>
+      <h5>THIS IS THE DECODER VIEW</h5>
       <h5 style={{ color: 'green' }}>{openGameStatus}</h5>
       <h3>Make a guess of {difficulty} numbers 0-7</h3>
       <input onChange={(e) => setCombo(e.target.value)} value={combo} placeholder="example 0123"></input>
-      {mode && username && combo.length === difficulty && attempts < 10 && !endGame ? <button onClick={() => makeGuess(combo, attempts)}>Make Guess</button> : null}
+      {mode && username && combo.length === difficulty && attempts < 10 && !endGame ? <button onClick={(e) => handleSocketMakeGuess(e)}>Make Guess</button> : null}
       <p>attempts left: {10-attempts}</p>
       <button onClick={() => getHint(gameID)}>Hint</button>
-      {hint.total !== undefined ? <p>First digit is: {hint.first}, Last digit is: {hint.last}, Total equals: {hint.total}</p> : null}
+      {hint.total !== undefined ? <p>First digit is {hint.first}, Last digit is {hint.last}, Total equals: {hint.total}</p> : null}
 
       <h3>Guess History</h3>
       <GuessHistory results={results}/>
       {endGame && results[results.length-1].loc === difficulty ? <p style={{ color: 'green' }}>All correct. YOU WON!</p> : null}
+      {endGame && caughtLie ? <p style={{ color: 'green' }}>You caught the lie! YOU WIN!</p> : null}
       {endGame && results[results.length-1].loc !== difficulty ? <p style={{ color: 'red' }}>You ran out of attempt.</p> : null}
+      <button onClick={(e) => handleCallBluff(e)}>Call Bluff!</button>
       </div>
       :null
       }
 
-{showCoderView ? <h5>CODER VIEW HERE</h5> : null}
+{showCoderView && !dropGame ?
+<div>
+<h5>Playing in {room}.</h5>
+<CoderView socketMsg={socketMsg} tellTruth={tellTruth} tellLie={tellLie} endGame={endGame}/>
+<p>Player has {10-attempts} left.</p>
+      {endGame && lastGuessResult.correctLoc === difficulty ? <p style={{ color: 'red' }}>Your code was cracked!</p> : null}
+      {endGame && caughtLie ? <p style={{ color: 'red' }}>You were caught lying!</p> : null}
+      {endGame && lastGuessResult.correctLoc !== difficulty ? <p style={{ color: 'green' }}>Player ran out of attempts. You win!</p> : null}
+</div>
+: null}
+
 
 <br/>
+{endGame && dropGame ? <h3>Player has disconnected. Rest Game to continue.</h3> : null}
 <button onClick={() => resetAll()}>Reset Game</button>
 <button onClick={() => console.log(username, room, mode, difficulty, gameID)}>States Check</button>
     </div>

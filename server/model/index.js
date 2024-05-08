@@ -31,7 +31,7 @@ function createHighScores(difficulty) {
 }
 
 function checkOpenGame(gameID) {
-  const queryStr = `SELECT status, difficulty FROM games WHERE mode='pvp1' AND id=$1;`;
+  const queryStr = `SELECT status, difficulty FROM games WHERE mode IN ('pvp1', 'pvp2') AND id=$1;`;
   return pool.query(queryStr, [gameID]);
 }
 
