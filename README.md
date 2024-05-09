@@ -12,7 +12,7 @@ Ultimate Mastermind is an implementation of [Mastermind](https://en.wikipedia.or
 - pvp1 (player vs player asychrnously)
 - pvp2 (player vs player synchrnously in real time)
 
-The frontend React client will lead player through gameplay.
+The frontend React client provides a UI to lead players through gameplay. Note case sensitivity when entering input.
 
 ## Installation and Running
 ### Requirements:
@@ -29,6 +29,7 @@ To run Ultimate Mastermind, clone respository to local system, navigate to clone
 npm install
 npm start
 ```
+Then nagivate to: http://localhost:3000
 ### PostgreSQL Installation
 <u>Mac / Linux</u>
 
@@ -64,7 +65,7 @@ sample.env
 .env
 ```
 
-## Archetecture
+## Architecture
 
 Ultimate Master is a full stack monolithic service featuring a React client frontend for the game’s UI, backed by a Node.js server (default port: 3000) and a Socket.io server (default port: 3010) alongside a PostgreSQL database (default port: 5432).
 
@@ -79,6 +80,33 @@ Security and Maintainability Highlights:
 - Pool connections between the Node.js server and PostgreSQL database enable fault tolerance against load spikes by parallelizing requests and setting connection limits.
 - Frontend values undergo parameterization by backend logic, mitigating SQL injection risks.
 
+
+## Directory Overview
+`/Client`
+
+Frontend files for the React, the game UI.
+
+  - `/dist`: Webpack & Babel generated bunndles passed to Node.js to serve.  Not in repository. Created upon `npm start`
+
+  - `/src`: React components Babel compiles and Webpack bundles for distribution. Reduces footprint and promotes backward browser compatiblity.
+
+`/Server`
+
+Backend files for Node.js server, Socket.io server, and PostgreSQL database.
+
+ - `/controller`: Functions coordinating operations between client requests and model functions for database interaction. Validates and transforms data before passing to model or responding to client.
+
+ - `helper.js`: Houses reusable helper functions for generating guess results, hints, and random answers using the Random.org API.
+
+ - `/db`: Establishes a pool connection to the PostgreSQL database. Contains functions responsible for creating the database and games table.
+
+- `/model`: Functions parameterizing frontend values and executing CRUD operations through database queries.
+
+- `index.js`: Node.js server for routing requests and serving the React client.
+
+- `routes.js`: Definitions for RESTful API endpoints, routing requests from the Node.js server to the appropriate controller functions.
+
+- `socket.js`: Logic for the Socket.io server to support synchronous multiplayer.
 
 ## Implemented Extensions
 
