@@ -18,7 +18,7 @@ The frontend React client provides a UI to lead players through gameplay. Note c
 ### Requirements:
 - npm 10.5.2 or later
 - [node 18.17.1](https://nodejs.org/en) or later
-- postgreSQL 14.11 or later (v14.11 for best compatibility)
+- [postgreSQL 14.11](https://www.postgresql.org) or later (v14.11 for best compatibility)
 
 Before running Ultimate Mastermind, <b><u>ensure PostgreSQL is operational on your system</u></b>. If you have PostgreSQL installed with a non-default username and password, you must provide these credentials in the `.env` file for Ultimate Mastermind to function properly.
 
@@ -110,7 +110,7 @@ Backend files for Node.js server, Socket.io server, and PostgreSQL database.
 
 ## Implemented Extensions
 
-### Give Hints
+### :mag: Give Hints
 - Provides three dynamically generated hints:
   - First digit in the answer.
   - Last digit in the answer.
@@ -160,3 +160,4 @@ In "pvp2" mode, players engage in real-time gameplay facilitated by websockets t
 - Server URL is "http:localhost:3010" by default.
 - All connected games (rooms), players (sockets), and event can be monitored in real time.
 - More information about the Socket.IO ADMIN UI can be found [here](https://socket.io/docs/v4/admin-ui/).
+- Authorization to access is turned off for demo and ease of use. Change if not deployed locally.
