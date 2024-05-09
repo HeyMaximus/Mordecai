@@ -148,7 +148,7 @@ In "pvp2" mode, players engage in real-time gameplay facilitated by websockets t
 - In "pvp2" mode, the game creator ("Encoder") can choose to tell the truth or lie about the guess made by the other player ("Decoder").
 - If the Encoder lies, an inaccurate result is sent to the Decoder.
 - The Decoder can call the bluff if they suspect a lie, ending the game in their favor if the call is accurate.
-- Winning requires the Decoder to call bluff on the specific turn a lie was sent, not if the Encoder has lied previously.
+- Winning this way requires the Decoder to call bluff on the specific turn a lie was sent, not if the Encoder has lied previously.
 
 ### :interrobang: Disconnection Detection
 - In "pvp2" mode, disconnection from the server prompts an event to update the UI and end the game for remaining players.
