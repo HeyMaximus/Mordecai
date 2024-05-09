@@ -82,11 +82,11 @@ Security and Maintainability Highlights:
 
 - Encapsulation ensures the client only receives results from backend-evaluated guesses, not the answers themselves.
 - A RESTful API with distinct endpoints routes and controls client requests, preventing direct database access.
-- Frontend inputs undergo validation before reaching the server, reducing vulnerabilities.
+- Frontend inputs undergo validation before reaching the server and again at the server before reaching the database, reducing vulnerabilities.
 - Despite its monolithic setup, the Node.js server operates statelessly.
 - Pool connections between the Node.js server and PostgreSQL database enable fault tolerance against load spikes by parallelizing requests and setting connection limits.
 - Frontend values undergo parameterization by backend logic, mitigating SQL injection risks.
-
+- MVC architecture facilitates transitions into microservices for horizontal scaling.
 
 ## Directory Overview
 `/Client`
