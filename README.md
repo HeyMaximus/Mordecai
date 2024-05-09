@@ -66,7 +66,6 @@ sample.env
 ```
 
 ## Architecture
-
 Ultimate Master is a full stack monolithic service featuring a React client frontend for the game’s UI, backed by a Node.js server (default port: 3000) and a Socket.io server (default port: 3010) alongside a PostgreSQL database (default port: 5432).
 
 It follows a Model-View-Controller pattern to organize the application’s logic into 3 distinct layers, each carrying out a specific set of tasks. This modularization enhances maintainability, unit testing ease, and security. The backend houses the core game logic, ensuring secure handling of sensitive data and creating non-visible application behavior.
@@ -109,7 +108,6 @@ Backend files for Node.js server, Socket.io server, and PostgreSQL database.
 - `socket.js`: Logic for the Socket.io server to support synchronous multiplayer.
 
 ## Implemented Extensions
-
 ### :mag: Give Hints
 - Provides three dynamically generated hints:
   - First digit in the answer.
