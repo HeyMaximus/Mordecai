@@ -12,15 +12,15 @@ Ultimate Mastermind is an implementation of [Mastermind](https://en.wikipedia.or
 - pvp1 (player vs player asynchronously)
 - pvp2 (player vs player synchronously in real time)
 
-The frontend React client provides a UI to lead players through gameplay. Note case sensitivity when entering input.
+A frontend React client provides an UI to lead players through gameplay. Inputs are case sensitive.
 
 ## Table of Contents
-- [Installation and Running](#installation-and-running) | [Requirements](#requirements) | [PostgreSQL Installation](#postgresql-installation) | [.env Configuration](#env-configuration)
+- [Installation and Running](#installation--running) | [Requirements](#requirements) | [PostgreSQL Installation](#postgresql-installation) | [.env Configuration](#env-configuration)
 - [Architecture](#architecture)
 - [Directory Overview](#directory-overview)
 - [Implemented Extensions](#implemented-extensions) | [Hints](#mag-give-hints) | [Difficulty Levels](#zap-configurable-difficulty-level) | [High Scores](#chart-high-scores) | [Async PvP](#couple-asynchronous-multiplayer-game-mode-pvp1) | [Synch PvP](#fire-synchronous-multiplayer-game-mode-pvp2) | [Disconnect](#interrobang-disconnection-detection) | [Admin Dashboard](#star2-socketio-admin-ui-dashboard)
 
-## Installation and Running
+## Installation & Running
 ### Requirements:
 - npm 10.5.2 or later
 - [node 18.17.1](https://nodejs.org/en) or later
@@ -30,9 +30,10 @@ Before running Ultimate Mastermind, <b><u>ensure PostgreSQL is operational on yo
 
 The application will automatically create the required database and tables, but it relies on establishing a successful connection to the local PostgreSQL database beforehand.
 
-To run Ultimate Mastermind, clone repository to local system, navigate to cloned directory and run in terminal:
+To run Ultimate Mastermind, clone repository to local system, navigate to cloned directory, and run in terminal:
 ```
 npm install
+npm build
 npm start
 ```
 Then navigate to: http://localhost:3000
@@ -74,7 +75,7 @@ example.env
 ```
 
 ## Architecture
-Ultimate Master is a full stack monolithic service featuring a React client frontend for the game’s UI, backed by a Node.js server (default port: 3000) and a Socket.io server (default port: 3010) alongside a PostgreSQL database (default port: 5432).
+Ultimate Mastermind is a full stack monolithic service featuring a React client frontend for the game’s UI, backed by a Node.js server (default port: 3000) and a Socket.io server (default port: 3010) alongside a PostgreSQL database (default port: 5432).
 
 It follows a Model-View-Controller pattern to organize the application’s logic into 3 distinct layers, each carrying out a specific set of tasks. This modularization enhances maintainability, unit testing ease, and security. The backend houses the core game logic, ensuring secure handling of sensitive data and creating non-visible application behavior.
 
