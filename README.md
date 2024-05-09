@@ -14,6 +14,12 @@ Ultimate Mastermind is an implementation of [Mastermind](https://en.wikipedia.or
 
 The frontend React client provides a UI to lead players through gameplay. Note case sensitivity when entering input.
 
+## Table of Contents
+- [Installation and Running](#installation-and-running) | [Requirements](#requirements) | [PostgreSQL Installation](#postgresql-installation) | [.env Configuration](#env-configuration)
+- [Architecture](#architecture)
+- [Directory Overview](#directory-overview)
+- [Implemented Extensions](#implemented-extensions) | [Hints](#mag-give-hints) | [Difficulty Levels](#zap-configurable-difficulty-level) | [High Scores](#chart-high-scores) | [Async PvP](#couple-asychronous-multiplayer-game-mode-pvp1) | [Synch PvP](#fire-sychronous-multiplayer-game-mode-pvp2) | [Disconnect](#interrobang-disconnection-detection) | [Admin Dashboard](#star2-socketio-admin-ui-dashboard)
+
 ## Installation and Running
 ### Requirements:
 - npm 10.5.2 or later
@@ -30,6 +36,7 @@ npm install
 npm start
 ```
 Then nagivate to: http://localhost:3000
+
 ### PostgreSQL Installation
 <u>Mac / Linux</u>
 
@@ -52,14 +59,15 @@ An interative installer can be accessed [here](https://www.postgresql.org/downlo
 NOTE: Initial install may ask to set a username and/or password. Please take note of these information. They will need to be provided to the .env file for the server to successfully connect to the database.
 
 Unless changed, the default user for PostgreSQL after a fresh installation is: <b>postgres</b>
-Depending on the system and version, the default password is left empty.
+
+Depending on the system and version, the default password is left empty or: <b>postgres</b>
 
 ### `.env` Configuration
-A `sample.env` is provided to offer more configuration options. Rename to `.env` for file to take effect.
+A `example.env` is provided to offer more configuration options. Rename to `.env` for file to take effect.
 - `DB_USER`, `DB_PASSWORD`, and `DB_NAME` must be provided if they are different than expected PostgreSQL defaults on local system.
 ```
 //BEFORE
-sample.env
+example.env
 
 //AFTER reanme
 .env
