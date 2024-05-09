@@ -5,7 +5,7 @@ async function initializePool(database = "postgres") {
     host: process.env.DB_HOST || "localhost",
     user: process.env.DB_USER || "postgres",
     password: process.env.DB_PASSWORD || "",
-    database: database,
+    database: process.env.DB_NAME || database,
     port: process.env.DB_PORT || "5432",
     max: 30,
   });

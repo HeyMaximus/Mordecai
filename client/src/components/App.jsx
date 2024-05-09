@@ -466,7 +466,6 @@ function App() {
       ) : null}
       {gameID !== 0 && mode === "pvp2" && role === "decoder" && !dropGame ? (
         <div>
-          <h5>THIS IS THE DECODER VIEW</h5>
           <h5 style={{ color: "green" }}>{openGameStatus}</h5>
           <h3>Make a guess of {difficulty} numbers 0-7</h3>
           <input

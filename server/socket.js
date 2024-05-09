@@ -49,9 +49,6 @@ io.on("connection", (socket) => {
   })
 
   socket.on("disconnecting", () => {
-    console.log("this socket disccoected: ", socket.id);
-    console.log('this is socket.rooms: ', socket.rooms);
-
     socket.rooms.forEach((room) => {
       socket.to(room).emit("drop-game", { endGame: true, dropGame: true });
     })
