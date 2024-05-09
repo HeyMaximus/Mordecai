@@ -9,8 +9,8 @@ Ultimate Mastermind is an implementation of [Mastermind](https://en.wikipedia.or
 
 3 game modes are offered:
 - solo (player vs PC)
-- pvp1 (player vs player asychrnously)
-- pvp2 (player vs player synchrnously in real time)
+- pvp1 (player vs player asychronously)
+- pvp2 (player vs player synchronously in real time)
 
 The frontend React client provides a UI to lead players through gameplay. Note case sensitivity when entering input.
 
