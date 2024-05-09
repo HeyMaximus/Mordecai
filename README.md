@@ -79,12 +79,13 @@ Ultimate Mastermind is a full stack monolithic service featuring a React client 
 
 It follows a Model-View-Controller pattern to organize the application’s logic into 3 distinct layers, each carrying out a specific set of tasks. This modularization enhances maintainability, unit testing ease, and security. The backend houses the core game logic, ensuring secure handling of sensitive data and creating non-visible application behavior.
 
-Security and Maintainability Highlights:
+Feature, Security, & Maintainability Highlights:
 
-- Encapsulation ensures the client only receives results from backend-evaluated guesses, not the answers themselves.
 - A RESTful API with distinct endpoints routes and controls client requests, preventing direct database access.
 - Frontend inputs undergo validation before reaching the server and again at the server before reaching the database, reducing vulnerabilities.
+- Encapsulation ensures the client only receives results from backend-evaluated guesses. Answers are never exposed to the frontend.
 - Despite its monolithic setup, the Node.js server operates statelessly.
+- A Socket.io server supporting real time multiplayer functionality and an Admin dashboard.
 - Pool connections between the Node.js server and PostgreSQL database enable fault tolerance against load spikes by parallelizing requests and setting connection limits.
 - Frontend values undergo parameterization by backend logic, mitigating SQL injection risks.
 - MVC architecture facilitates transitions into microservices for horizontal scaling.
