@@ -14,6 +14,6 @@ app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "../client/dist")));
 app.use("/api", router);
 
-let port = process.env.SERVER_PORT || 3000
+let port = process.env.SERVER_PORT || 3000;
 app.listen(port);
 console.log(`Node listening on PORT: ${port}.`);
