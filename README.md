@@ -5,28 +5,25 @@
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 ![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
 
-Ultimate Mastermind is an implementation of [Mastermind](https://en.wikipedia.org/wiki/Mastermind_(board_game)), a board game designed by Mordecai Meirowitz.
+Ultimate Mastermind is a backend-focused implementation of [Mastermind](https://en.wikipedia.org/wiki/Mastermind_(board_game)), a board game designed by Mordecai Meirowitz. A frontend React client provides an UI to instruct and lead players through gameplay. Additional information is provided in [Architecture](#architecture) and [Directory Overview](#directory-overview) sections.
 
-3 game modes are offered:
-- solo (player vs PC)
-- pvp1 (player vs player asynchronously)
-- pvp2 (player vs player synchronously in real time)
-
-A frontend React client provides an UI to lead players through gameplay. Inputs are case sensitive.
-
-## Table of Contents
-- [Installation and Running](#installation--running) | [Requirements](#requirements) | [PostgreSQL Installation](#postgresql-installation) | [.env Configuration](#env-configuration)
-- [Architecture](#architecture)
-- [Directory Overview](#directory-overview)
-- [Implemented Extensions](#implemented-extensions) | [Hints](#mag-give-hints) | [Difficulty Levels](#zap-configurable-difficulty-level) | [High Scores](#chart-high-scores) | [Async PvP](#couple-asynchronous-multiplayer-game-mode-pvp1) | [Synch PvP](#fire-synchronous-multiplayer-game-mode-pvp2) | [Disconnect](#interrobang-disconnection-detection) | [Admin Dashboard](#star2-socketio-admin-ui-dashboard)
+8 extensions were implemented as of May 9, 2024:
+- :couple: [Multiplayer pvp1 (player vs player asynchronously)](#couple-asynchronous-multiplayer-game-mode-pvp1)
+- :fire: [Multiplayer pvp2 (player vs player synchronously in real time)](#fire-synchronous-multiplayer-game-mode-pvp2)
+- :joy: [Lie/Bluff Gameplay Mechanic](#joy-lie--call-bluff)
+- :mag: [Hints](#mag-give-hints)
+- :zap: [Difficulty Levels](#zap-configurable-difficulty-level)
+- :chart: [High Scores List](#chart-high-scores)
+- :interrobang: [Disconnection Detection During pvp2](#interrobang-disconnection-detection)
+- :star2: [Socket.io Admin Dashboard](#star2-socketio-admin-ui-dashboard)
 
 ## Installation & Running
-### Requirements:
+### Requirements
 - npm 10.5.2 or later
-- [node 18.17.1](https://nodejs.org/en) or later
-- [postgreSQL 14.11](https://www.postgresql.org) or later (v14.11 for best compatibility)
+- [Node 18.17.1](https://nodejs.org/en) or later
+- [PostgreSQL 14.11](https://www.postgresql.org) or later ([PostgreSQL Installation](#postgresql-installation))
 
-Before running Ultimate Mastermind, <b><u>ensure PostgreSQL is operational on your system</u></b>. If you have PostgreSQL installed with a non-default username and password, you must provide these credentials in the `.env` file for Ultimate Mastermind to function properly.
+Before running Ultimate Mastermind, <b><u>ensure PostgreSQL is operational</u></b>. If PostgreSQL were installed with a non-default username and password, then you must provide username and password in the `.env` file for Ultimate Mastermind to run properly.
 
 The application will automatically create the required database and tables, but it relies on establishing a successful connection to the local PostgreSQL database beforehand.
 
@@ -38,8 +35,8 @@ npm start
 ```
 Then navigate to: http://localhost:3000
 
-### PostgreSQL Installation
-<u>Mac / Linux</u>
+## PostgreSQL Installation
+### Mac / Linux
 
 The easiest approach is to use [Homebrew](https://brew.sh), a package manager. With Homebrew installed, install PostgreSQL with terminal commands:
 ```
@@ -53,21 +50,21 @@ Confirm PostgreSQL is running with
 ```
 brew services list
 ```
-<u>Windows</u>
+### Windows
 
 An interactive installer can be accessed [here](https://www.postgresql.org/download/windows).
 
-NOTE: Initial install may ask to set a username and/or password. Please take note of these information. They will need to be provided to the .env file for the server to successfully connect to the database.
+NOTE: Initial install may ask to set a username and/or password. Please take note of these information. They will need to be provided to the `.env` file for the server to successfully connect to the database.
 
 Unless changed, the default user for PostgreSQL after a fresh installation is: <b>postgres</b>
 
-Depending on the system and version, the default password is left empty or: <b>postgres</b>
+Depending on the system and version, the default password is left empty or is: <b>postgres</b>
 
-### `.env` Configuration
+## `.env` Configuration
 An `example.env` is provided to offer more configuration options. Rename to `.env` for file to take effect.
 - `DB_USER`, `DB_PASSWORD`, and `DB_NAME` must be provided if they are different than expected default PostgreSQL values on the local system.
 ```
-//BEFORE
+//BEFORE rename
 example.env
 
 //AFTER rename
@@ -82,12 +79,11 @@ It follows a Model-View-Controller pattern to organize the application’s logic
 Feature, Security, & Maintainability Highlights:
 
 - A RESTful API with distinct endpoints routes and controls client requests, preventing direct database access.
-- Frontend inputs undergo validation before reaching the server and again at the server before reaching the database, reducing vulnerabilities.
+- Player inputs undergo frontend validation and parameterization by backend logic, mitigating SQL injection risks and vulnerabilities.
 - Encapsulation ensures the client only receives results from backend-evaluated guesses. Answers are never exposed to the frontend.
 - Despite its monolithic setup, the Node.js server operates statelessly.
 - A Socket.io server supporting real time multiplayer functionality and an Admin dashboard.
 - Pool connections between the Node.js server and PostgreSQL database enable fault tolerance against load spikes by parallelizing requests and setting connection limits.
-- Frontend values undergo parameterization by backend logic, mitigating SQL injection risks.
 - MVC architecture facilitates transitions into microservices for horizontal scaling.
 
 ## Directory Overview
@@ -168,4 +164,4 @@ In "pvp2" mode, players engage in real-time gameplay facilitated by websockets t
 - Server URL is "http:localhost:3010" by default.
 - All connected games (rooms), players (sockets), and events can be monitored in real time.
 - More information about the Socket.IO ADMIN UI can be found [here](https://socket.io/docs/v4/admin-ui/).
-- Authorization to access is turned off for demo and ease of use. Change if not deployed locally.
+- Authorization requirement is turned off for demo. Turn on and set password if deployed live.
