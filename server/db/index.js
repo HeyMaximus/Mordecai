@@ -44,7 +44,7 @@ async function createTable() {
       );
     `;
     await pool.query(query);
-    console.log('PostgreSQL Pool connected.')
+    console.log('PostgreSQL Pool connected.');
     return pool;
   } catch (error) {
     console.error("Error creating table:", error);
