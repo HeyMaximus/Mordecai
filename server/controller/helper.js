@@ -38,7 +38,7 @@ function analyzeGuess(guess, answer) {
     if (guessNum === answerNum) {
       correctLoc += 1;
     } else {
-      freqMap[answerNum] = freqMap[answerNum] ? (freqMap[answerNum] += 1) : 1;
+      freqMap[answerNum] = freqMap[answerNum] ? (freqMap[answerNum] + 1) : 1;
       remainders.push(guessNum);
     }
   }
