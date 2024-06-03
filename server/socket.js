@@ -61,5 +61,6 @@ instrument(io, {
 
 const url = process.env.SOCKET_PORT || 3010;
 io.listen(url);
+console.log(`Socket.io listening on PORT: ${url}.`);
 
 module.exports = io;

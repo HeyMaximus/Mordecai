@@ -16,4 +16,4 @@ app.use("/api", router);
 
 let port = process.env.SERVER_PORT || 3000
 app.listen(port);
-console.log(`Server listening on PORT: ${port}.`);
+console.log(`Node listening on PORT: ${port}.`);

@@ -22,7 +22,7 @@ async function createDatabase() {
     if (error.code !== "42P04") {
       console.error("Error creating database:", error);
     } else {
-      console.log("Database mordecai found.");
+      console.log("DB mordecai found.");
     }
   }
 }
@@ -44,6 +44,7 @@ async function createTable() {
       );
     `;
     await pool.query(query);
+    console.log('PostgreSQL Pool connected.')
     return pool;
   } catch (error) {
     console.error("Error creating table:", error);
@@ -55,7 +56,7 @@ async function initializeDb() {
     await createDatabase();
     return await createTable();
   } catch (error) {
-    console.error("Initialization failed:", error);
+    console.error("PostgreSQL DB initialization failed:", error);
   }
 }
 
