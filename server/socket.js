@@ -59,8 +59,8 @@ instrument(io, {
   auth: false,
 });
 
-const url = process.env.SOCKET_PORT || 3010;
-io.listen(url);
-console.log(`Socket.io listening on PORT: ${url}.`);
+const port = process.env.SOCKET_PORT || 3010;
+io.listen(port);
+console.log(`Socket.io listening on PORT: ${port}.`);
 
 module.exports = io;

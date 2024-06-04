@@ -89,31 +89,29 @@ Feature, Security, & Maintainability Highlights:
 - MVC architecture facilitates transitions into microservices for horizontal scaling.
 
 ## Directory Overview
-`/Client`
+Some important files and folders to note
 
-Frontend files for the React, the game UI.
+`/client`: Frontend files for React, the game UI.
 
-  - `/dist`: Webpack & Babel generated bundles passed to Node.js to serve.  Not in the repository. Created upon `npm start`
+  - `/dist`: Not in the repository. Created upon `npm start`. Webpack & Babel generated bundles passed to Node.js to serve.
 
   - `/src`: React components Babel compiles and Webpack bundles for distribution. Reduces footprint and promotes backward browser compatibility.
 
-`/Server`
-
-Backend files for Node.js server, Socket.io server, and PostgreSQL database.
+`/server`: Backend files for Node.js server, Socket.io server, and PostgreSQL database.
 
  - `/controller`: Functions coordinating operations between client requests and model functions for database interaction. Validates and transforms data before passing to model or responding to client.
 
- - `helper.js`: Houses reusable helper functions for generating guess results, hints, and random answers using the Random.org API.
+   - `helper.js`: Houses reusable helper functions for generating guess results, hints, and random answers using the Random.org API.
 
- - `/db`: Establishes a pool connection to the PostgreSQL database. Contains functions responsible for creating the database and games table.
+ - `/db`: Establishes a pool connection to the PostgreSQL database. Automates database and table creation.
 
-- `/model`: Functions parameterizing frontend values and executing CRUD operations through database queries.
+- `/model`: Functions parameterizing frontend values and executing database CRUD operations.
 
 - `index.js`: Node.js server for routing requests and serving the React client.
 
 - `routes.js`: Definitions for RESTful API endpoints, routing requests from the Node.js server to the appropriate controller functions.
 
-- `socket.js`: Logic for the Socket.io server to support synchronous multiplayer.
+- `socket.js`: Logics for the Socket.io server to support synchronous multiplayer (pvp2).
 
 ## Implemented Extensions
 ### :mag: Give Hints
