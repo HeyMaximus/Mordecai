@@ -3,11 +3,11 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
-![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
+[![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)](https://socket.io/)
 
 Ultimate Mastermind is a backend-focused implementation of Mastermind, a board game designed by Mordecai Meirowitz. Additional information is provided in [Architecture](#architecture) and [Directory Overview](#directory-overview) sections.
 
-### [Demo YouTube Video](https://youtu.be/CTsa-XCDsWY)
+### <a href="https://youtu.be/CTsa-XCDsWY" target="_blank">Demo YouTube Video</a>
 
 8 extensions were implemented as of May 9, 2024:
 - :couple: [Multiplayer pvp1 (player vs player asynchronously)](#couple-asynchronous-multiplayer-game-mode-pvp1)
