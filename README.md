@@ -5,7 +5,9 @@
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 ![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
 
-Ultimate Mastermind is a backend-focused implementation of [Mastermind](https://en.wikipedia.org/wiki/Mastermind_(board_game)), a board game designed by Mordecai Meirowitz. A frontend React client provides an UI to instruct and lead players through gameplay. Additional information is provided in [Architecture](#architecture) and [Directory Overview](#directory-overview) sections.
+Ultimate Mastermind is a backend-focused implementation of Mastermind, a board game designed by Mordecai Meirowitz. Additional information is provided in [Architecture](#architecture) and [Directory Overview](#directory-overview) sections.
+
+### [Demo YouTube Video](https://youtu.be/CTsa-XCDsWY)
 
 8 extensions were implemented as of May 9, 2024:
 - :couple: [Multiplayer pvp1 (player vs player asynchronously)](#couple-asynchronous-multiplayer-game-mode-pvp1)
